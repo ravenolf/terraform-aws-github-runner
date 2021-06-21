@@ -71,4 +71,16 @@ describe('handler', () => {
     expect(resp).toBe(200);
     expect(sendActionRequest).not.toBeCalled();
   });
+
+  it('does not handle check_run events from unlisted repository', async () => {
+    process.env.REPOSITORY_WHITE_LIST = JSON.stringify(["NotCodertocat/Hello-World"]);
+    const event = check_run_event;
+    const resp = await handle(
+      { 'X-Hub-Signature': 'sha1=4a82d2f60346e16dab3546eb3b56d8dde4d5b659', 'X-GitHub-Event': 'push' },
+      JSON.stringify(event),
+    );
+    expect(resp).toBe(500);
+    expect(sendActionRequest).not.toBeCalled();
+  });
+
 });
